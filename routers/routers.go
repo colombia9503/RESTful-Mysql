@@ -4,6 +4,7 @@ import "github.com/gorilla/mux"
 
 func InitRouters() *mux.Router {
 	router := mux.NewRouter().StrictSlash(false)
-	router = SetUsersRouters(router)
+	router = SetUsuariosRouters(router)
+	router = SetAuthRouter(router)
 	return router
 }
