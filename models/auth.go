@@ -12,21 +12,18 @@ var Auth = new(auth)
 type auth struct{}
 
 func (auth) LogIn(User, Pwd string) string {
-	var u Usuario
+	var u *Usuario
 	row := common.DB.QueryRow("select usuario, clave, salt, rol from usuario where usuario ='" + User + "' and activo = 1 and borrado = 0")
-	if row == nil {
-		return "Usuario no existe"
-	}
 
 	if err := row.Scan(&u.Usuario, &u.Clave, &u.Salt, &u.Rol); err != nil {
-		return "err"
+		return "no hay columnas"
 	}
 
 	if ComparePasswords(u.Clave, Pwd, u.Salt) {
-		return "logeado"
+		return "correcto"
 	}
 
-	return "Contraseña y usuario incorrectos"
+	return "credenciales incorrectas"
 }
 
 func ComparePasswords(bdpwd, pwd, salt string) bool {
