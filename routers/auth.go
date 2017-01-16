@@ -7,6 +7,6 @@ import (
 
 func SetAuthRouter(router *mux.Router) *mux.Router {
 	//router.HandleFunc("/auth", controllers.Auth.).Methods("GET")
-	router.HandleFunc("/auth", controllers.Auth.Login).Methods("POST")
+	router.HandleFunc("/api/auth", controllers.Auth.Login).Methods("POST")
 	return router
 }

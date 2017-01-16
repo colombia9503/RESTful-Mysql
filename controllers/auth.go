@@ -19,9 +19,9 @@ func (ac *authController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := models.Auth.LogIn(u.Usuario, u.Clave)
-	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
-		common.JsonError(w, err, http.StatusBadRequest)
+	result, err := models.Auth.LogIn(u.Usuario, u.Clave)
+	if err != nil {
+		common.JsonError(w, err, http.StatusUnauthorized)
 		return
 	}
 

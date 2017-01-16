@@ -7,23 +7,38 @@ import (
 	"github.com/colombia9503/RESTful-Mysql/common"
 )
 
+type Credencial struct {
+	Nombre  string `db:"nombre"`
+	Usuario string `db:"usuario"`
+	Rol     string `db:"rol"`
+}
+
 var Auth = new(auth)
 
 type auth struct{}
 
-func (auth) LogIn(User, Pwd string) string {
-	var u *Usuario
-	row := common.DB.QueryRow("select usuario, clave, salt, rol from usuario where usuario ='" + User + "' and activo = 1 and borrado = 0")
+func (auth) LogIn(User, Pwd string) (Credencial, error) {
+	var u Usuario
+	var c Credencial
+	row := common.DB.QueryRow("select nombre, usuario, clave, salt, rol from usuario where usuario ='" + User + "' and activo = 1 and borrado = 0")
 
-	if err := row.Scan(&u.Usuario, &u.Clave, &u.Salt, &u.Rol); err != nil {
-		return "no hay columnas"
+	if err := row.Scan(&u.Nombre, &u.Usuario, &u.Clave, &u.Salt, &u.Rol); err != nil {
+		c = Credencial{}
+		//err = no sql rows
+		return c, common.NewLogErr("Invalid Password/Account")
 	}
 
 	if ComparePasswords(u.Clave, Pwd, u.Salt) {
-		return "correcto"
+		c = Credencial{
+			Nombre:  u.Nombre,
+			Usuario: u.Usuario,
+			Rol:     u.Rol,
+		}
+		return c, nil
 	}
 
-	return "credenciales incorrectas"
+	c = Credencial{}
+	return c, common.NewLogErr("Invalid Password/Account")
 }
 
 func ComparePasswords(bdpwd, pwd, salt string) bool {
