@@ -6,5 +6,6 @@ func InitRouters() *mux.Router {
 	router := mux.NewRouter().StrictSlash(false)
 	router = SetUsuariosRouters(router)
 	router = SetAuthRouter(router)
+	router = SetClientesRouters(router)
 	return router
 }
