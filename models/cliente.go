@@ -10,7 +10,8 @@ type Cliente struct {
 	ID          string `db:"id"`
 	RazonSocial string `db:"razonsocial"`
 	Telefono    string `db:"telefono"`
-	Direccion   string `db:"Direccion"`
+	Direccion   string `db:"direccion"`
+	Prefijo     string `db:"prefijo"`
 	Borrado     int    `db:"borrado"`
 }
 
@@ -18,9 +19,9 @@ var Clientes = new(clientes)
 
 type clientes struct{}
 
-func (clientes) SelectAll() ([]Cliente, error) {
+func (clientes) SelectAll(ctransf string) ([]Cliente, error) {
 	cl := []Cliente{}
-	rows, err := common.DB.Query("select * from cliente where borrado = 0;")
+	rows, err := common.DB.Query("select codigo, sede, id, razonsocial, telefono, direccion, prefijo, borrado from cliente where borrado = 0 and ctransformador = " + ctransf + ";")
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +29,7 @@ func (clientes) SelectAll() ([]Cliente, error) {
 
 	for rows.Next() {
 		var c Cliente
-		if err := rows.Scan(&c.Codigo, &c.Sede, &c.ID, &c.RazonSocial, &c.Telefono, &c.Direccion, &c.Borrado); err != nil {
+		if err := rows.Scan(&c.Codigo, &c.Sede, &c.ID, &c.RazonSocial, &c.Telefono, &c.Direccion, &c.Prefijo, &c.Borrado); err != nil {
 			return nil, err
 		}
 		cl = append(cl, c)

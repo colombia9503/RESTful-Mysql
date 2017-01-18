@@ -7,5 +7,7 @@ func InitRouters() *mux.Router {
 	router = SetUsuariosRouters(router)
 	router = SetAuthRouter(router)
 	router = SetClientesRouters(router)
+	router = SetConcentracionesRouters(router)
+	router = SetMarcasRouters(router)
 	return router
 }

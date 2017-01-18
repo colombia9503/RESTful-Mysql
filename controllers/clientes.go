@@ -14,7 +14,8 @@ type clientesController struct{}
 var Clientes = new(clientesController)
 
 func (cc *clientesController) Get(w http.ResponseWriter, r *http.Request) {
-	clts, err := models.Clientes.SelectAll()
+	query := r.URL.Query()["ctransf"]
+	clts, err := models.Clientes.SelectAll(query[0])
 	if err != nil {
 		common.JsonError(w, err, http.StatusBadRequest)
 	}
