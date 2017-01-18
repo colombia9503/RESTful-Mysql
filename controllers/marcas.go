@@ -19,7 +19,6 @@ func (mc *marcasController) Create(w http.ResponseWriter, r *http.Request) {
 		common.JsonError(w, err, http.StatusBadRequest)
 		return
 	}
-
 	err := models.Marcas.Insert(m.Marca)
 	if err != nil {
 		common.JsonError(w, err, http.StatusBadRequest)
@@ -30,13 +29,38 @@ func (mc *marcasController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (mc *marcasController) Get(w http.ResponseWriter, r *http.Request) {
+	results, err := models.Marcas.SelectAll()
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
 
+	res, err := json.Marshal(results)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	common.JsonOk(w, res, http.StatusOK)
 }
 
 func (mc *marcasController) GetOne(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	println("GetOne: ", id)
+	result, err := models.Marcas.SelectOne(id)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	res, err := json.Marshal(result)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	common.JsonOk(w, res, http.StatusOK)
 }
 
 func (mc *marcasController) Update(w http.ResponseWriter, r *http.Request) {

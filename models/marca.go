@@ -33,9 +33,9 @@ func (marcas) SelectAll() ([]Marca, error) {
 	return mrs, nil
 }
 
-func (marcas) SelectOne(id string) (*Marca, error) {
-	var m *Marca
-	row := common.DB.QueryRow("select * from marca where borrado = 0")
+func (marcas) SelectOne(id string) (Marca, error) {
+	var m Marca
+	row := common.DB.QueryRow("select * from marca where id = " + id + " and borrado = 0")
 	return m, row.Scan(&m.ID, &m.Marca, &m.Borrado)
 }
 
@@ -49,7 +49,7 @@ func (marcas) Insert(marca string) error {
 	return err
 }
 
-func (marcas) Update(mr *Marca) (*Marca, error) {
+func (marcas) Update(mr Marca) (Marca, error) {
 	stmt, err := common.DB.Prepare("update marca set marca = ? where id = ?;")
 	if err != nil {
 		return nil, err
