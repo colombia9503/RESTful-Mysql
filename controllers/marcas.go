@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/colombia9503/RESTful-MDB/common"
 	"github.com/colombia9503/RESTful-Mysql/models"
@@ -47,7 +48,6 @@ func (mc *marcasController) Get(w http.ResponseWriter, r *http.Request) {
 func (mc *marcasController) GetOne(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	println("GetOne: ", id)
 	result, err := models.Marcas.SelectOne(id)
 	if err != nil {
 		common.JsonError(w, err, http.StatusBadRequest)
@@ -65,12 +65,47 @@ func (mc *marcasController) GetOne(w http.ResponseWriter, r *http.Request) {
 
 func (mc *marcasController) Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	println("Put: ", id)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	var m models.Marca
+	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	result, err := models.Marcas.Update(id, m)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	res, err := json.Marshal(result)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	common.JsonOk(w, res, http.StatusOK)
 }
 
 func (mc *marcasController) Delete(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	println("Delete: ", id)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	err = models.Marcas.Delete(id)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	common.JsonStatus(w, http.StatusOK)
+
 }

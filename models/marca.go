@@ -49,12 +49,12 @@ func (marcas) Insert(marca string) error {
 	return err
 }
 
-func (marcas) Update(mr Marca) (Marca, error) {
-	stmt, err := common.DB.Prepare("update marca set marca = ? where id = ?;")
+func (marcas) Update(id int, mr Marca) (Marca, error) {
+	stmt, err := common.DB.Prepare("update marca set marca = ? where id = ? and borrado = 0;")
 	if err != nil {
-		return nil, err
+		return mr, err
 	}
-	_, err = stmt.Exec(mr.Marca, mr.ID)
+	_, err = stmt.Exec(mr.Marca, id)
 	defer stmt.Close()
 	return mr, err
 }

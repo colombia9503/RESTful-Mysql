@@ -19,7 +19,7 @@ func (ac *authController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := models.Auth.LogIn(u.Usuario, u.Clave)
+	result, err := models.Auth.Login(u.Usuario, u.Clave)
 	if err != nil {
 		common.JsonError(w, err, http.StatusUnauthorized)
 		return
@@ -32,4 +32,12 @@ func (ac *authController) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	common.JsonOk(w, res, http.StatusOK)
+}
+
+func (ac *authController) RefreshToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+
+}
+
+func (ac *authController) Logout(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+
 }
