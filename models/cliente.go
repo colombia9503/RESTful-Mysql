@@ -19,9 +19,9 @@ var Clientes = new(clientes)
 
 type clientes struct{}
 
-func (clientes) SelectAll(ctransf string) ([]Cliente, error) {
+func (clientes) SelectAll() ([]Cliente, error) {
 	cl := []Cliente{}
-	rows, err := common.DB.Query("select codigo, sede, id, razonsocial, telefono, direccion, prefijo, borrado from cliente where borrado = 0 and ctransformador = " + ctransf + ";")
+	rows, err := common.DB.Query("select codigo, sede, id, razonsocial, telefono, direccion, prefijo, borrado from cliente where borrado = 0;")
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,6 @@ func (clientes) SelectAll(ctransf string) ([]Cliente, error) {
 		cl = append(cl, c)
 	}
 	return cl, nil
-
 }
 
 func (clientes) SelectOne(ID string) (Cliente, error) {

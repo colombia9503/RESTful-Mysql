@@ -6,17 +6,12 @@ import (
 	"net/http"
 
 	"github.com/colombia9503/RESTful-Mysql/common"
-	"github.com/colombia9503/RESTful-Mysql/models"
 )
 
 type Credencial struct {
-	Nombre  string `db:"nombre" json:"Nombre"`
-	Rol     string `db:"rol" json:"Rol"`
-	Session Token  `json:"Token"`
-}
-
-type Token struct {
-	Token string `json:"Token"`
+	Nombre string `db:"nombre" json:"Nombre"`
+	Rol    string `db:"rol" json:"Rol"`
+	Token  string `json:"Token"`
 }
 
 var Auth = new(auth)
@@ -24,13 +19,13 @@ var Auth = new(auth)
 type auth struct{}
 
 func (auth) Login(User, Pwd string) (*Credencial, error) {
-	var u models.Usuario
+	var u Usuario
 	var c *Credencial
 	row := common.DB.QueryRow("select nombre, usuario, clave, salt, rol from usuario where usuario ='" + User + "' and activo = 1 and borrado = 0")
 
 	if err := row.Scan(&u.Nombre, &u.Usuario, &u.Clave, &u.Salt, &u.Rol); err != nil {
 		//err = no sql rows
-		return nil, common.NewLogErr("Invalid Password/Account")
+		return nil, common.NewLogErr("Invalid Login Credentials")
 	}
 
 	if ComparePasswords(u.Clave, Pwd, u.Salt) {
@@ -40,11 +35,7 @@ func (auth) Login(User, Pwd string) (*Credencial, error) {
 		}
 		return c, nil
 	}
-	return nil, common.NewLogErr("Invalid Password/Account")
-}
-
-func (auth) RefreshToken(user models.Usuario) *Credencial {
-	return nil
+	return nil, common.NewLogErr("Invalid Login Credentials")
 }
 
 func (auth) Logout(r *http.Request) error {

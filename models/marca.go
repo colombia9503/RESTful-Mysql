@@ -2,8 +2,6 @@ package models
 
 import (
 	"github.com/colombia9503/RESTful-Mysql/common"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 type Marca struct {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/colombia9503/RESTful-MDB/common"
+	"github.com/colombia9503/RESTful-Mysql/common"
 	"github.com/colombia9503/RESTful-Mysql/models"
 	"github.com/gorilla/mux"
 )

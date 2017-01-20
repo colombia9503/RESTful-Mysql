@@ -22,8 +22,8 @@ type AppClaims struct {
 }
 
 const (
-	privKeyPath = "/home/santiago/.ssh/id_rsa"
-	pubKeyPath  = "/home/santiago/.ssh/id_rsa.pub"
+	privKeyPath = "keys/tm.rsa"
+	pubKeyPath  = "keys/tm.rsa.pub"
 )
 
 var (
@@ -39,7 +39,7 @@ func initKeys() {
 		log.Fatalf("[initKeys]: %s\n", err)
 	}
 
-	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
 	if err != nil {
 		log.Fatalf("[initKeys]: %s\n", err)
 	}

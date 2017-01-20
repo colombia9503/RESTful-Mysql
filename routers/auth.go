@@ -7,7 +7,7 @@ import (
 
 //requeres HEADER: Autorization: Beared + TOKEN
 func SetAuthRouter(router *mux.Router) *mux.Router {
-	router.HandleFunc("/auth", controllers.Auth.Login).Methods("GET")
+	router.HandleFunc("/auth/login", controllers.Auth.Login).Methods("POST")
 	//router.HandleFunc("/auth/token-auth", controllers.Auth.Login).Methods("POST")
 	/**router.Handle("/auth/refresh-token-auth",
 		negroni.New(

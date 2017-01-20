@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/colombia9503/RESTful-MDB/common"
+	"github.com/colombia9503/RESTful-Mysql/common"
 	"github.com/colombia9503/RESTful-Mysql/models"
 	"github.com/gorilla/mux"
 )
@@ -14,8 +14,8 @@ type clientesController struct{}
 var Clientes = new(clientesController)
 
 func (cc *clientesController) Get(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()["ctransf"]
-	clts, err := models.Clientes.SelectAll(query[0])
+	//query := r.URL.Query()["ctransf"]
+	clts, err := models.Clientes.SelectAll()
 	if err != nil {
 		common.JsonError(w, err, http.StatusBadRequest)
 	}
