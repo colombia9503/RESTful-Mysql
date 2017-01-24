@@ -1,5 +1,11 @@
 package models
 
+import (
+	"io"
+	"net/http"
+	"os"
+)
+
 type Transformador struct {
 	ID               int     `db:"id"`
 	Codigo           string  `db:"codigo"`
@@ -15,26 +21,56 @@ type Transformador struct {
 	borrado          int     `db:"borrado"`
 }
 
+const MAX_MEMORY = 1 * 1024 * 1024
+
 var Transformadores = new(transformadores)
 
 type transformadores struct{}
 
-func SelectAll() {
+func (transformadores) SelectAll() {
 
 }
 
-func SelectOne() {
+func (transformadores) SelectOne() {
 
 }
 
-func Insert() {
+func (transformadores) Insert() {
 
 }
 
-func Update() {
+func (transformadores) Update() {
 
 }
 
-func Delete() {
+func (transformadores) Delete() {
 
+}
+
+func (transformadores) UploadImage(r *http.Request) error {
+	if err := r.ParseMultipartForm(MAX_MEMORY); err != nil {
+		return err
+	}
+
+	m := r.MultipartForm
+
+	files := m.File["image"]
+	for i, _ := range files {
+		file, err := files[i].Open()
+		defer file.Close()
+		if err != nil {
+			return err
+		}
+
+		dst, err := os.Create("/home/Documents/ServerImages" + files[i].Filename)
+		defer dst.Close()
+		if err != nil {
+			return err
+		}
+
+		if _, err := io.Copy(dst, file); err != nil {
+			return err
+		}
+	}
+	return nil
 }

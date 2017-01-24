@@ -55,14 +55,14 @@ func initKeys() {
 	}
 }
 
-func GenerateJWT(name, user, role string) (string, error) {
+func GenerateJWT(user, name, role string) (string, error) {
 	//Create the claims
 	claims := AppClaims{
-		name,
 		user,
+		name,
 		role,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 20).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 5).Unix(),
 			Issuer:    "admin",
 		},
 	}
@@ -126,6 +126,24 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 			401,
 		)
 	}
+}
+
+//Refresh token, taking the claims and the expiration time
+func RefreshToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	/**rtoken, err := TokenFromAuthHeader(r)
+	if err != nil {
+		DisplayAppError(
+			w,
+			err,
+			"Can't decode the token",
+			http.StatusBadGateway,
+		)
+	}*/
+}
+
+//LogOut, expiring the token in request
+func LogOut(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+
 }
 
 // TokenFromAuthHeader is a "TokenExtractor" that takes a given request and extracts

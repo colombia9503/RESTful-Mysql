@@ -9,9 +9,7 @@ import (
 )
 
 type Credencial struct {
-	Nombre string `db:"nombre" json:"Nombre"`
-	Rol    string `db:"rol" json:"Rol"`
-	Token  string `json:"Token"`
+	Token string `json:"Token"`
 }
 
 var Auth = new(auth)
@@ -20,7 +18,6 @@ type auth struct{}
 
 func (auth) Login(User, Pwd string) (*Credencial, error) {
 	var u Usuario
-	var c *Credencial
 	row := common.DB.QueryRow("select nombre, usuario, clave, salt, rol from usuario where usuario ='" + User + "' and activo = 1 and borrado = 0")
 
 	if err := row.Scan(&u.Nombre, &u.Usuario, &u.Clave, &u.Salt, &u.Rol); err != nil {
@@ -29,12 +26,13 @@ func (auth) Login(User, Pwd string) (*Credencial, error) {
 	}
 
 	if ComparePasswords(u.Clave, Pwd, u.Salt) {
-		c = &Credencial{
-			Nombre: u.Nombre,
-			Rol:    u.Rol,
+		token, err := common.GenerateJWT(u.Usuario, u.Nombre, u.Rol)
+		if err != nil {
+			return nil, err
 		}
-		return c, nil
+		return &Credencial{Token: token}, nil
 	}
+
 	return nil, common.NewLogErr("Invalid Login Credentials")
 }
 

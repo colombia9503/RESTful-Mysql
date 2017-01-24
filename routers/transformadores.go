@@ -14,6 +14,7 @@ func SetTransformadoresRouters(router *mux.Router) *mux.Router {
 	transformadoresRouter.HandleFunc("/api/transformadores/{id}", controllers.Transformadores.GetOne).Methods("GET")
 	transformadoresRouter.HandleFunc("/api/transformadores/{id}", controllers.Transformadores.Update).Methods("PUT")
 	transformadoresRouter.HandleFunc("/api/transformadores/{id}", controllers.Transformadores.Delete).Methods("DELETE")
+	transformadoresRouter.HandleFunc("/api/transformadores/upload", controllers.Transformadores.Upload).Methods("POST")
 	router.PathPrefix("/api/transformadores").Handler(
 		negroni.New(
 			negroni.HandlerFunc(common.Authorize),
