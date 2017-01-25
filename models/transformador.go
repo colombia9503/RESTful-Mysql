@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/colombia9503/RESTful-Mysql/common"
 )
 
 type Transformador struct {
@@ -18,33 +20,79 @@ type Transformador struct {
 	ImgTransformador string  `db:"img_transformador"`
 	ImgPlaqueta      string  `db:"img_plaqueta"`
 	ImgBascula       string  `db:"img_bascula"`
-	borrado          int     `db:"borrado"`
+	Borrado          int     `db:"borrado"`
 }
 
-const MAX_MEMORY = 1 * 1024 * 1024
+const MAX_MEMORY = 15 * 1024 * 1024
+const SERVER_PATH = "ServerImages/"
 
 var Transformadores = new(transformadores)
 
 type transformadores struct{}
 
-func (transformadores) SelectAll() {
-
+func (transformadores) SelectAll() ([]Transformador, error) {
+	transfs := []Transformador{}
+	rows, err := common.DB.Query("Select * from transformador;")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var t Transformador
+		if err := rows.Scan(&t.ID, &t.Codigo, &t.Cliente, &t.Marca, &t.KV, &t.Peso,
+			&t.Concentracion, &t.Descripcion, &t.ImgTransformador, &t.ImgBascula, &t.ImgPlaqueta,
+			&t.Borrado); err != nil {
+			return nil, err
+		}
+		transfs = append(transfs, t)
+	}
+	return transfs, nil
 }
 
-func (transformadores) SelectOne() {
-
+func (transformadores) SelectOne(id string) (Transformador, error) {
+	var t Transformador
+	row := common.DB.QueryRow("select * from transformador where id=? and borrado = 0", id)
+	return t, row.Scan(&t.ID, &t.Codigo, &t.Cliente, &t.Marca, &t.KV, &t.Peso,
+		&t.Concentracion, &t.Descripcion, &t.ImgTransformador, &t.ImgBascula, &t.ImgPlaqueta,
+		&t.Borrado)
 }
 
-func (transformadores) Insert() {
-
+func (transformadores) Insert(t Transformador) error {
+	stmt, err := common.DB.Prepare("insert into concentracion (codigo, cliente, marca, kv, peso, concentracion, " +
+		"descripcion, img_transformador, img_bascula, img_plaqueta) " +
+		"values(?,?,?,?,?,?,?,?,?,?);")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(t.Codigo, t.Cliente, t.Marca, t.KV, t.Peso,
+		t.Concentracion, t.Descripcion, t.ImgTransformador, t.ImgBascula, t.ImgPlaqueta)
+	defer stmt.Close()
+	return err
 }
 
-func (transformadores) Update() {
-
+func (transformadores) Update(t Transformador, id int) error {
+	stmt, err := common.DB.Prepare("update concentracion set codigo = ?, cliente = ?, marca = ?, kv = ?, peso = ?, concentracion = ?, " +
+		"descripcion = ?, img_transformador = ?, img_bascula = ?, img_plaqueta = ? " +
+		"where id = ? and borrado = 0;")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(t.Codigo, t.Cliente, t.Marca, t.KV, t.Peso,
+		t.Concentracion, t.Descripcion, t.ImgTransformador, t.ImgBascula, t.ImgPlaqueta,
+		id)
+	defer stmt.Close()
+	return err
 }
 
-func (transformadores) Delete() {
+func (transformadores) Delete(id int) error {
+	stmt, err := common.DB.Prepare("update concentracion set borrado = 1 where id = ? and borrado = 0;")
+	if err != nil {
+		return err
+	}
 
+	_, err = stmt.Exec(id)
+	defer stmt.Close()
+	return err
 }
 
 func (transformadores) UploadImage(r *http.Request) error {
@@ -54,15 +102,17 @@ func (transformadores) UploadImage(r *http.Request) error {
 
 	m := r.MultipartForm
 
-	files := m.File["image"]
+	files := m.File["images"]
+	clientid := m.Value["cliente"]
+	transid := m.Value["transformador"]
 	for i, _ := range files {
 		file, err := files[i].Open()
-		defer file.Close()
+		//defer file.Close()
 		if err != nil {
 			return err
 		}
-
-		dst, err := os.Create("/home/Documents/ServerImages" + files[i].Filename)
+		os.MkdirAll(SERVER_PATH+clientid[0]+"/"+transid[0], os.ModePerm)
+		dst, err := os.Create(SERVER_PATH + clientid[0] + "/" + files[i].Filename)
 		defer dst.Close()
 		if err != nil {
 			return err
@@ -73,4 +123,8 @@ func (transformadores) UploadImage(r *http.Request) error {
 		}
 	}
 	return nil
+}
+
+func (transformadores) GetImagePath() {
+
 }

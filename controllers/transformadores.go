@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/colombia9503/RESTful-Mysql/common"
@@ -13,11 +14,35 @@ type transformadoresController struct{}
 var Transformadores = new(transformadoresController)
 
 func (mc *transformadoresController) Create(w http.ResponseWriter, r *http.Request) {
+	var t models.Transformador
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
 
+	err := models.Transformadores.Insert(t)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	common.JsonStatus(w, http.StatusOK)
 }
 
 func (mc *transformadoresController) Get(w http.ResponseWriter, r *http.Request) {
+	results, err := models.Transformadores.SelectAll()
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
 
+	res, err := json.Marshal(results)
+	if err != nil {
+		common.JsonError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	common.JsonOk(w, res, http.StatusOK)
 }
 
 func (mc *transformadoresController) GetOne(w http.ResponseWriter, r *http.Request) {
