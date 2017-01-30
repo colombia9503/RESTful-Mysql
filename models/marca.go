@@ -6,6 +6,8 @@ import (
 
 type Marca struct {
 	ID      int    `db:"id"`
+	Codigo  string `db:"codigo"`
+	Nombre  string `db:"nombre"`
 	Marca   string `db:"marca"`
 	Borrado string `db:"borrado"`
 }
@@ -23,7 +25,7 @@ func (marcas) SelectAll() ([]Marca, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var m Marca
-		if err := rows.Scan(&m.ID, &m.Marca, &m.Borrado); err != nil {
+		if err := rows.Scan(&m.ID, &m.Codigo, &m.Nombre, &m.Marca, &m.Borrado); err != nil {
 			return nil, err
 		}
 		mrs = append(mrs, m)
@@ -34,15 +36,15 @@ func (marcas) SelectAll() ([]Marca, error) {
 func (marcas) SelectOne(id string) (Marca, error) {
 	var m Marca
 	row := common.DB.QueryRow("select * from marca where id = " + id + " and borrado = 0")
-	return m, row.Scan(&m.ID, &m.Marca, &m.Borrado)
+	return m, row.Scan(&m.ID, &m.Codigo, &m.Nombre, &m.Marca, &m.Borrado)
 }
 
-func (marcas) Insert(marca string) error {
-	stmt, err := common.DB.Prepare("insert into marca (marca) values(?);")
+func (marcas) Insert(m Marca) error {
+	stmt, err := common.DB.Prepare("insert into marca (marca, nombre, codigo) values(?,?,?);")
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(marca)
+	_, err = stmt.Exec(m.Marca, m.Nombre, m.Codigo)
 	defer stmt.Close()
 	return err
 }

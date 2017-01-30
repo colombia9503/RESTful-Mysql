@@ -4,6 +4,7 @@ import "github.com/colombia9503/RESTful-Mysql/common"
 
 type Concentracion struct {
 	ID            int    `db:"id"`
+	Codigo        string `db:"codigo"`
 	Concentracion string `db:"concentracion"`
 	Borrado       int    `db:"borrado"`
 }
@@ -21,7 +22,7 @@ func (concentraciones) SelectAll() ([]Concentracion, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var c Concentracion
-		if err := rows.Scan(&c.ID, &c.Concentracion, &c.Borrado); err != nil {
+		if err := rows.Scan(&c.ID, &c.Codigo, &c.Concentracion, &c.Borrado); err != nil {
 			return nil, err
 		}
 		cts = append(cts, c)
@@ -32,15 +33,15 @@ func (concentraciones) SelectAll() ([]Concentracion, error) {
 func (concentraciones) SelectOne(id string) (Concentracion, error) {
 	var c Concentracion
 	row := common.DB.QueryRow("select * from concentracion where id = " + id + " and borrado = 0")
-	return c, row.Scan(&c.ID, &c.Concentracion, &c.Borrado)
+	return c, row.Scan(&c.ID, &c.Codigo, &c.Concentracion, &c.Borrado)
 }
 
-func (concentraciones) Insert(Concentracion string) error {
-	stmt, err := common.DB.Prepare("insert into concentracion (concentracion) values(?);")
+func (concentraciones) Insert(c Concentracion) error {
+	stmt, err := common.DB.Prepare("insert into concentracion (codigo, concentracion) values(?,?);")
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(Concentracion)
+	_, err = stmt.Exec(c.Codigo, c.Concentracion)
 	defer stmt.Close()
 	return err
 }

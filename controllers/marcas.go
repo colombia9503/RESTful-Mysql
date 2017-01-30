@@ -20,7 +20,7 @@ func (mc *marcasController) Create(w http.ResponseWriter, r *http.Request) {
 		common.JsonError(w, err, http.StatusBadRequest)
 		return
 	}
-	err := models.Marcas.Insert(m.Marca)
+	err := models.Marcas.Insert(m)
 	if err != nil {
 		common.JsonError(w, err, http.StatusBadRequest)
 		return

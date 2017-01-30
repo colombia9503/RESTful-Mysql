@@ -20,7 +20,7 @@ func (coc *concentracionesController) Create(w http.ResponseWriter, r *http.Requ
 		common.JsonError(w, err, http.StatusBadRequest)
 		return
 	}
-	err := models.Concentraciones.Insert(m.Concentracion)
+	err := models.Concentraciones.Insert(m)
 	if err != nil {
 		common.JsonError(w, err, http.StatusBadRequest)
 		return
